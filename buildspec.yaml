@@ -7,4 +7,4 @@ phases:
       - aws cloudformation delete-stack --stack-name lambda-eb-soni
       - aws cloudformation delete-stack --stack-name lambda-eb-victory
       - aws s3 rm s3://news3bucket-2025-12-1/scripts/template-1763062212114.yaml
-      - aws s3 rm s3://your-temp-bucket/temp/lambda-testing.txt
+      - aws s3 rm s3://news3bucket-2025-12-1/temp/lambda-testing.txt
