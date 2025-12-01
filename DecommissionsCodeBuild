@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Decommissions
+
+Parameters:
+  GitHubBranch:
+    Type: String
+    Description: GitHub branch to build from
+    Default: main
+
+  GitHubRepoName:
+    Type: String
+    Description: GitHub repository name
+    Default: Decommissions.git
+
+  GitHubUrl:
+    Type: String
+    Description: GitHub HTTPS URL
+    Default: https://github.com/venky-77/Decommissions.git
+
+  GitHubCodeConnectionsArn:
+    Type: String
+    Description: CodeConnections ARN for GitHub
+    Default: arn:aws:codeconnections:us-east-1:794038240530:connection/e1451198-782d-4d06-bec1-8f9266072524
+
+  BuildSpec:
+    Type: String
+    Description: Path to buildspec file
+    Default: buildspec.yaml
+
+  ComputeType:
+    Type: String
+    Default: BUILD_GENERAL1_SMALL
+    AllowedValues:
+      - BUILD_GENERAL1_SMALL
+      - BUILD_GENERAL1_MEDIUM
+      - BUILD_GENERAL1_LARGE
+
+  OperatingSystem:
+    Type: String
+    Default: aws/codebuild/amazonlinux2-x86_64-standard:4.0
+
+Resources:
+  DecommissionsLambdaEventBridgeCodeBuild:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: Decommissions-Lambda-EventBridge
+      Description: Decommissions Lambda + EventBridge deployment 
+      ServiceRole: arn:aws:iam::794038240530:role/service-role/codebuild-New-Project-service-role
+      Source:
+        Type: GITHUB
+        Location: !Ref GitHubUrl
+        Auth:
+          Type: CODECONNECTIONS
+          Resource: !Ref GitHubCodeConnectionsArn
+        GitCloneDepth: 1
+        ReportBuildStatus: true
+        BuildSpec: !Ref BuildSpec
+      SourceVersion: !Ref GitHubBranch
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: !Ref ComputeType
+        Image: !Ref OperatingSystem
+        EnvironmentVariables:
+          - Name: GITHUB_BRANCH
+            Value: !Ref GitHubBranch
+          - Name: GITHUB_REPO_NAME
+            Value: !Ref GitHubRepoName
+          - Name: REGION
+            Value: !Sub ${AWS::Region}
+      TimeoutInMinutes: 10
+
+Outputs:
+  CodeBuildProjectName:
+    Description: Name of the CodeBuild project
+    Value: !Ref DecommissionsLambdaEventBridgeCodeBuild
