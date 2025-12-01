@@ -1,0 +1,10 @@
+version: 0.2
+phases:
+  build:
+    commands:
+      - aws cloudformation delete-stack --stack-name codebuild1
+      - aws cloudformation delete-stack --stack-name lambda-eb-alex
+      - aws cloudformation delete-stack --stack-name lambda-eb-soni
+      - aws cloudformation delete-stack --stack-lambda-eb-victory
+      - aws s3 rm s3://news3bucket-2025-12-1/scripts/template-1763062212114.yaml
+      - aws s3 rm s3://your-temp-bucket/temp/ --recursive
